@@ -1,0 +1,32 @@
+<depositos>
+	<depostito>
+		<nombre>CINCO CENTIMOS</nombre>
+		<valor>5</valor>
+		<cantidad>10</cantidad>
+	</depostito>
+	<depostito>
+		<nombre>DIEZ CENTIMOS</nombre>
+		<valor>10</valor>
+		<cantidad>10</cantidad>
+	</depostito>
+	<depostito>
+		<nombre>VEINTE CENTIMOS</nombre>
+		<valor>20</valor>
+		<cantidad>10</cantidad>
+	</depostito>
+	<depostito>
+		<nombre>CINCUENTA CENTIMOS</nombre>
+		<valor>50</valor>
+		<cantidad>10</cantidad>
+	</depostito>
+	<depostito>
+		<nombre>UN EURO</nombre>
+		<valor>100</valor>
+		<cantidad>10</cantidad>
+	</depostito>
+	<depostito>
+		<nombre>DOS EUROS</nombre>
+		<valor>200</valor>
+		<cantidad>10</cantidad>
+	</depostito>
+</depositos>

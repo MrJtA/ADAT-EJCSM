@@ -1,0 +1,26 @@
+<dispensadores>
+	<dispensador>
+		<clave>xml</clave>
+		<nombreLargo>Cargado desde XML</nombreLargo>
+		<precio>105</precio>
+		<cantidad>5</cantidad>
+	</dispensador>
+	<dispensador>
+		<clave>cola</clave>
+		<nombreLargo>Coca-Cola</nombreLargo>
+		<precio>110</precio>
+		<cantidad>5</cantidad>
+	</dispensador>
+	<dispensador>
+		<clave>sprite</clave>
+		<nombreLargo>Sprite</nombreLargo>
+		<precio>110</precio>
+		<cantidad>5</cantidad>
+	</dispensador>
+	<dispensador>
+		<clave>nestea</clave>
+		<nombreLargo>Nestea</nombreLargo>
+		<precio>125</precio>
+		<cantidad>1</cantidad>
+	</dispensador>
+</dispensadores>

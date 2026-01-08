@@ -1,0 +1,8 @@
+Acceso a bases de datos Mongo.
+- Comentar excepciones y mejorarlas.
+- Mejorar situación de clave ya existente.
+- Aplicar el principio de responsabilidad única para las clases de fichero y database:
+    - Método crear fichero para la clase fichero.
+    - Traspasar datos para cada tipo solo en su respectiva clase.
+    - Pensar si es buena idea hacer una clase abstracta universal.
+- Empezar Mongo
