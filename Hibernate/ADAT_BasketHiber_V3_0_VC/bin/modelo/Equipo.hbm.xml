@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+	<class name="modelo.Equipo" table="team">
+		<id name="id" type="int">
+			<column name="idTeam" />
+			<generator class="increment" />
+		</id>
+		
+		<property name="nombre" type="string">
+			<column name="Name" length="30" not-null="true" />
+		</property>
+
+		<!--Nombre del atributo de la clase misma , tiene que ser un set-->
+        <set name="conjuntoJugadores" inverse="true" cascade="all">
+			<!--Clave forenea del jugador que lo relaciona con la clase equipo-->
+            <key column="idTeamFK" not-null="true" />
+			<!--Clase del many-->
+            <one-to-many class="modelo.Jugador"/>
+        </set>
+		
+	</class>
+
+</hibernate-mapping>
+
+<!--  https://www.codejava.net/frameworks/hibernate/hibernate-one-to-many-xml-mapping-example -->

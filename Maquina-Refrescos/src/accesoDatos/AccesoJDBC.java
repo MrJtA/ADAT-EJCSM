@@ -1,15 +1,7 @@
 package accesoDatos;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.sql.*;
+import java.util.*;
 
 import auxiliares.LeeProperties;
 import logicaRefrescos.Deposito;

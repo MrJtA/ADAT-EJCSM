@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+	<class name="Modelo.Libro" table="libro">
+
+		<id name="isbn" type="int">
+			<column name="isbn" />
+			<generator class="assigned"/>
+		</id>
+		<property name="titulo" type="string">
+			<column name="titulo" length="100" />
+		</property>
+		<property name="autor" type="string">
+			<column name="autor" length="100" />
+		</property>
+		<property name="editorial" type="string">
+			<column name="editorial" length="100" /> 
+		</property>
+		<property name="genero" type="string">
+			<column name="genero" length="100" />
+		</property>
+
+	</class>
+
+</hibernate-mapping>
