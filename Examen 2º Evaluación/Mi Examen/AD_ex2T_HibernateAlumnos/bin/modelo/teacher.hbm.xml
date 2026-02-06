@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+	<class name="modelo.Teacher" table="profesor">
+		<id name="id" type="int">
+			<column name="id" />
+			<generator class="increment" />
+		</id>
+		<property name="name" type="string">
+			<column name="nombre" length="30" not-null="true"/>
+		</property>
+        <property name="workingYears" type="string">
+			<column name="experiencia" length="11" not-null="true" />
+		</property>
+        <set name="conjuntoAsignaturas" inverse="true" cascade="all">
+            <key column="teacherId" not-null="true" />
+            <one-to-many class="modelo.Asignatura"/>
+        </set>
+		
+	</class>
+
+</hibernate-mapping>
+
+<!--  https://www.codejava.net/frameworks/hibernate/hibernate-one-to-many-xml-mapping-example -->

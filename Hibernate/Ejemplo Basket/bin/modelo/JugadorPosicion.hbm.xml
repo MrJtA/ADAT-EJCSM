@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+	<class name="modelo.JugadorPosicion" table="playerposition">
+		<id name="id" type="int">
+			<column name="ID" />
+			<generator class="increment" />
+		</id>
+		
+		<!-- name para el nombre del atributo de la clase y column para el nombre de  la columna de la tabla de la clase (Clave foranea que lo relaciona con otro clase)-->
+		<many-to-one name="j" column="player" not-null="true" />
+		<many-to-one name="p" column="position" not-null="true" />
+		
+		<property name="numVeces" type="int">
+			<column name="NUM" not-null="true" />
+		</property>
+	</class>
+	
+</hibernate-mapping>

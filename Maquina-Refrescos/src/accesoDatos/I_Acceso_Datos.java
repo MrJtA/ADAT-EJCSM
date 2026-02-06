@@ -1,6 +1,5 @@
 package accesoDatos;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import logicaRefrescos.Deposito;
 import logicaRefrescos.Dispensador;

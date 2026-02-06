@@ -1,5 +1,4 @@
 - Robustez en el fallo de la creacion de objetos fichero, sql y mongo, y mejorar controlador
-- Probar como va todo
 - Implementar método cerrar
 - Implementar vista a todos los prints
 - Terminar de organizar carpetas
