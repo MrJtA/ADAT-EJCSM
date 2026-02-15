@@ -1,48 +1,5 @@
 {
     "java.project.referencedLibraries": [
-        "lib/**/*.jar",
-        "c:\\Users\\DAM2\\Documents\\ADAT-EJCSM\\Mongo\\librerias\\morphia-1.2.1.jar",
-        "c:\\Users\\DAM2\\Documents\\ADAT-EJCSM\\Mongo\\librerias\\morphia-1.2.1-javadoc.jar",
-        "c:\\Users\\DAM2\\Documents\\ADAT-EJCSM\\Mongo\\librerias\\libreriasMongo_nuevas\\bson-5.3.1.jar",
-        "c:\\Users\\DAM2\\Documents\\ADAT-EJCSM\\Mongo\\librerias\\libreriasMongo_nuevas\\mongodb-driver-core-5.3.1.jar",
-        "c:\\Users\\DAM2\\Documents\\ADAT-EJCSM\\Mongo\\librerias\\libreriasMongo_nuevas\\mongodb-driver-sync-5.3.1.jar",
-        "c:\\Users\\DAM2\\Documents\\ADAT-EJCSM\\Mongo\\librerias\\libreriasMongo_nuevas\\mongo-java-driver-3.12.14.jar",
-        "c:\\Users\\DAM2\\Documents\\ADAT-EJCSM\\MySQL\\Libs\\mysql-connector-java-8.0.25.jar",
-        "Proyecto-Integrador-EJCSM/lib/jdom-2.0.6.jar",
-        "Proyecto-Integrador-EJCSM/lib/jdom-2.0.6-contrib.jar",
-        "Proyecto-Integrador-EJCSM/lib/jdom-2.0.6-javadoc.jar",
-        "Proyecto-Integrador-EJCSM/lib/jdom-2.0.6-junit.jar",
-        "Proyecto-Integrador-EJCSM/lib/jdom-2.0.6-sources.jar",
-        "Proyecto-Integrador-EJCSM/lib/antlr-2.7.7.jar",
-        "Proyecto-Integrador-EJCSM/lib/bson-5.3.1.jar",
-        "Proyecto-Integrador-EJCSM/lib/byte-buddy-1.9.11.jar",
-        "Proyecto-Integrador-EJCSM/lib/classmate-1.3.4.jar",
-        "Proyecto-Integrador-EJCSM/lib/converter.jar",
-        "Proyecto-Integrador-EJCSM/lib/dom4j-2.1.1.jar",
-        "Proyecto-Integrador-EJCSM/lib/explorer.jar",
-        "Proyecto-Integrador-EJCSM/lib/FastInfoset-1.2.15.jar",
-        "Proyecto-Integrador-EJCSM/lib/hibernate-commons-annotations-5.1.0.Final.jar",
-        "Proyecto-Integrador-EJCSM/lib/hibernate-core-5.4.6.Final.jar",
-        "Proyecto-Integrador-EJCSM/lib/istack-commons-runtime-3.0.7.jar",
-        "Proyecto-Integrador-EJCSM/lib/jandex-2.0.5.Final.jar",
-        "Proyecto-Integrador-EJCSM/lib/javassist-3.24.0-GA.jar",
-        "Proyecto-Integrador-EJCSM/lib/javax.activation-api-1.2.0.jar",
-        "Proyecto-Integrador-EJCSM/lib/javax.persistence-api-2.2.jar",
-        "Proyecto-Integrador-EJCSM/lib/jaxb-api-2.3.1.jar",
-        "Proyecto-Integrador-EJCSM/lib/jaxb-runtime-2.3.1.jar",
-        "Proyecto-Integrador-EJCSM/lib/jboss-logging-3.3.2.Final.jar",
-        "Proyecto-Integrador-EJCSM/lib/jboss-transaction-api_1.2_spec-1.1.1.Final.jar",
-        "Proyecto-Integrador-EJCSM/lib/mongodb-driver-core-5.3.1.jar",
-        "Proyecto-Integrador-EJCSM/lib/mongodb-driver-sync-5.3.1.jar",
-        "Proyecto-Integrador-EJCSM/lib/mongo-java-driver-3.12.14.jar",
-        "Proyecto-Integrador-EJCSM/lib/mysql-connector-java-8.0.26.jar",
-        "Proyecto-Integrador-EJCSM/lib/objectdb.jar",
-        "Proyecto-Integrador-EJCSM/lib/objectdb-jee.jar",
-        "Proyecto-Integrador-EJCSM/lib/stax-ex-1.8.jar",
-        "Proyecto-Integrador-EJCSM/lib/txw2-2.3.1.jar"
-    ],
-    "editor.tokenColorCustomizations": {
-        "comments": "",
-        "textMateRules": []
-    }
+        "lib/*.jar"
+    ]
 }

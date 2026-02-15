@@ -12,13 +12,10 @@
         <class>Modelo.Libro</class>
 
         <properties>
-            <property name="javax.persistence.jdbc.url" value="db/Libro.odb"/>
-            
+            <property name="javax.persistence.jdbc.url" value="db/Libro.odb"/>           
             <property name="javax.persistence.jdbc.user" value="admin"/>
             <property name="javax.persistence.jdbc.password" value="admin"/>
-
-            <property name="javax.persistence.schema-generation.database.action" value="create"/>
-            
+            <property name="javax.persistence.schema-generation.database.action" value="create"/>            
             <property name="objectdb.enhancer.auto" value="true"/>
         </properties>
         

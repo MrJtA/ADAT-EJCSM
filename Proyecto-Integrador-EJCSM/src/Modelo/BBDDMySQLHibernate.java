@@ -1,57 +1,65 @@
 package Modelo;
 
+import Vista.Vista;
 import java.util.*;
 import org.hibernate.*;
 import org.hibernate.cfg.Configuration;
 
-public class BBDDMySQLHibernate implements Funcionalidades{
+public final class BBDDMySQLHibernate implements Funcionalidades{
 
-	private HashMap<Integer, Libro> biblioteca;
 	private SessionFactory sessionFactory;
+	private final String nombreBBDD;
+	private final HashMap<Integer, Libro> biblioteca;
+	private final Vista vista;
 
 	public BBDDMySQLHibernate() {
+		this.nombreBBDD = "biblioteca";
+		this.vista = new Vista();
 		try {
         	this.sessionFactory = new Configuration().configure("res/hibernate.cfg.xml").buildSessionFactory();
+			this.vista.conexionBBDD(this.nombreBBDD);
         	// this.session = sessionFactory.openSession();
-        } catch (Throwable e) {
-            System.err.println("Error: No se ha podido crear la SessionFactory.");
-            System.err.println(e.getMessage());
-            throw new ExceptionInInitializerError(e);
+        } catch (HibernateException e) {
+            this.vista.errorConexionBBDD(this.nombreBBDD);
         }
 		this.biblioteca = leer();
 	}
 
 	@Override
-    public HashMap<Integer,Libro> leer() {
+	public HashMap<Integer, Libro> leer() {
 		HashMap<Integer, Libro> aux = new HashMap<>();
 		try (Session session = sessionFactory.openSession()) {
-			List<Libro> datos = session.createQuery("from Libro",Libro.class).list();
-			session.close();
+			List<Libro> datos = session.createQuery("from Libro", Libro.class).list();		
 			for (Libro libro : datos) {
 				int isbn = libro.getIsbn();
-				aux.put(isbn, libro);
+				if (aux.containsKey(isbn)) {
+					this.vista.errorLibroRepetido(isbn);
+				} else {
+					aux.put(isbn, libro);
+				}
 			}
 		} catch (HibernateException e) {
-			System.err.println("Error: No se han podido leer los datos la base de datos.");
-            System.err.println(e.getMessage());
+			this.vista.errorLecturaBBBDD(this.nombreBBDD);
 		}
 		return aux;
 	}
 
 	@Override
-    public void guardar(HashMap<Integer,Libro> datos) {
+	public void guardar(HashMap<Integer, Libro> datos) {
 		Transaction ts = null;
 		try (Session session = sessionFactory.openSession()) {
 			ts = session.beginTransaction();
+			session.createQuery("delete from Libro").executeUpdate();
 			for (Libro libro : datos.values()) {
-                session.saveOrUpdate(libro);
-            }
+				session.save(libro);
+			}
 			ts.commit();
+			this.vista.guardadoBBDD(this.nombreBBDD);
 		} catch (HibernateException e) {
 			if (ts != null) {
 				ts.rollback();
 			}
-			System.err.println("Error: No se ha podido establecer la conexión con la base de datos.");
+			this.vista.errorGuardadoBBDD(this.nombreBBDD);
 		}
 	}
 
@@ -59,7 +67,7 @@ public class BBDDMySQLHibernate implements Funcionalidades{
     public void insertar(Libro libro) {
 		int isbn = libro.getIsbn();
 		if (this.biblioteca.containsKey(isbn)) {
-			System.out.println("Error: Ya existe un libro con el mismo isbn: " + isbn);
+			this.vista.errorLibroExistente(isbn);
 			return;
 		}
 		Transaction ts = null;
@@ -68,36 +76,19 @@ public class BBDDMySQLHibernate implements Funcionalidades{
 			session.save(libro);
 			ts.commit();
 			this.biblioteca.put(libro.getIsbn(), libro);
-			System.out.println("El libro con el isbn: " + isbn + " se ha registrado correctamente.");
+			this.vista.insercionLibro(isbn);
 		} catch (HibernateException e) {
 			if (ts != null) {
 				ts.rollback();
 			}
-			System.err.println("Error: No se ha podido insertar el libro con el ISBN '" + isbn + "' en la base de datos.");
-            System.err.println(e.getMessage());
+			this.vista.errorInsercionLibro(isbn);
 		}
-
-		/*
-		Session session = sessionFactory.openSession();
-		Transaction ts = session.beginTransaction();
-		Libro aux = session.get(Libro.class, libro.getISBN());
-		if(aux == null){
-			session.save(libro);
-			this.biblioteca.add(libro.getISBN(), libro);
-			System.out.println("El libro con el isbn: " + isbn + " se ha registrado correctamente.");
-		} else {
-			System.err.println("Error: No se ha podido insertar el libro con el ISBN '" + isbn + "' en la base de datos.");
-		}
-		ts.commit();
-		session.close();
-		*/
-	
 	}
 
 	@Override
 	public void borrar(int isbn) {
 		if (!this.biblioteca.containsKey(isbn)) {
-            System.out.println("Error: No existe ningún libro con el ISBN '" + isbn + "'.");
+            this.vista.errorLibroInexistente(isbn);
             return;
         }
 		Transaction ts = null;
@@ -107,20 +98,19 @@ public class BBDDMySQLHibernate implements Funcionalidades{
 			session.delete(aux);
 			ts.commit();
 			this.biblioteca.remove(isbn);
-			System.out.println("El libro con el ISBN: " + isbn + " se ha borrado correctamente.");
+			this.vista.borradoLibro(isbn);
 		} catch (HibernateException e) {
 			if (ts != null) {
 				ts.rollback();
 			}
-			System.err.println("Error: No se ha podido borrar el con el ISBN '" + isbn + "' en la base de datos.");
-            System.err.println(e.getMessage());
+			this.vista.errorBorradoLibro(isbn);
 		}
 	}
 
 	@Override
     public void modificar(int isbn, Libro libroNuevo) {
         if (!this.biblioteca.containsKey(isbn)) {
-            System.out.println("Error: No existe ningún libro con el ISBN '" + isbn + "'.");
+            this.vista.errorLibroInexistente(isbn);
             return;
         }
         Transaction ts = null;
@@ -140,13 +130,31 @@ public class BBDDMySQLHibernate implements Funcionalidades{
             ts.commit();
             this.biblioteca.remove(isbn);
             this.biblioteca.put(libroNuevo.getIsbn(), libroNuevo);
-            System.out.println("El libro con el ISBN '" + isbn + "' se ha sustituido correctamente por el libro con el ISBN '" + libroNuevo.getIsbn() + "'.");
+            this.vista.modificacionLibro(isbn, libroNuevo.getIsbn());
         } catch (HibernateException e) {
-            if (ts != null) ts.rollback();
-            System.err.println("Error: No se ha podido modificar el libro con el ISBN '" + isbn + "' en la base de datos.");
-            System.err.println(e.getMessage());
+            if (ts != null) {
+				ts.rollback();
+			}
+            this.vista.errorModificacionLibro(isbn);
         }
     }
+
+	@Override
+	public void restablecer() {
+		Transaction ts = null;
+		try (Session session = sessionFactory.openSession()) {
+			ts = session.beginTransaction();
+			session.createQuery("delete from Libro").executeUpdate();
+			ts.commit();
+			this.biblioteca.clear();
+			this.vista.restablecerLibros();
+		} catch (HibernateException e) {
+			if (ts != null) {
+				ts.rollback();
+			}
+			this.vista.errorRestablecerLibros();
+		}
+	}
 
 	/*
 	
@@ -155,14 +163,12 @@ public class BBDDMySQLHibernate implements Funcionalidades{
 		try (Session session = sessionFactory.openSession()) {
 			Libro libro = session.get(Libro.class, isbn);
 			if (libro == null) {
-				System.out.println("Error: No existe ningún libro con el ISBN '" + isbn + "'.");
+				this.vista.errorLibroInexistente(isbn);
 			} else {
-				System.out.println("Libro encontrado con ISBN '" + isbn + "':");
-				System.out.println(libro);
+				this.vista.buscar(this.biblioteca, isbn);
 			}
 		} catch (HibernateException e) {
-			System.err.println("Error: No se ha podido buscar el libro con el ISBN '" + isbn + "' en la base de datos.");
-            System.err.println(e.getMessage());
+			this.vista.errorBusquedaLibro(isbn);
 		}
 	}
 
@@ -171,17 +177,15 @@ public class BBDDMySQLHibernate implements Funcionalidades{
 		try (Session session = sessionFactory.openSession()) {
 			List<Libro> libros = session.createQuery("from Libro", Libro.class).list();
 			if (libros.isEmpty()) {
-				System.out.println("No hay libros en la base de datos.");
+				this.vista.errorVacío();
 			} else {
-				libros.forEach(System.out::println);
+				this.vista.mostrar(this.biblioteca);
 			}
 		} catch (HibernateException e) {
-			System.err.println("Error: No se han podido mostrar los libros en la base de datos.");
-            System.err.println(e.getMessage());
+			this.vista.errorMuestraLibros();
 		}
 	}
 
-	
 	*/
 
 }

@@ -1,32 +1,35 @@
 package Modelo;
 
+import Vista.Vista;
 import java.io.*;
 import java.util.*;
 
 public final class FicheroTxt implements Funcionalidades {
 
-    private String nombreFichero;
+    private final String nombreFichero;
     private File fichero;
-    private HashMap<Integer,Libro> biblioteca;
+    private final HashMap<Integer,Libro> biblioteca;
+    private final Vista vista;
 
     public FicheroTxt(String nombreFichero) {
         this.nombreFichero = nombreFichero;
-        this.fichero = crearFichero(this.nombreFichero);
+        this.vista = new Vista();
+        try {
+            this.fichero = crearFichero(this.nombreFichero);
+        } catch (IOException e) {
+            this.vista.errorCreacionFichero(nombreFichero);
+        }
         this.biblioteca = leer();
     }
 
-    private File crearFichero(String nombreFichero) {
+    private File crearFichero(String nombreFichero) throws IOException {
         File aux = new File("ficheros/" + nombreFichero + ".txt");
         File directorioPadre = aux.getParentFile();
         if (directorioPadre != null && !directorioPadre.exists()) {
             directorioPadre.mkdirs();
         }
-        try {
-            if (aux.createNewFile()) {
-                System.out.println("El fichero no existe y se ha creaado correctamente.");
-            }
-        } catch (IOException e) {
-            System.err.println("Error: No se ha podido encontrar o crear el fichero de texto.");
+        if (aux.createNewFile()) {
+            this.vista.creacionFichero(nombreFichero);
         }
         return aux;
     }
@@ -34,21 +37,26 @@ public final class FicheroTxt implements Funcionalidades {
     @Override
     public HashMap<Integer,Libro> leer() {
         HashMap<Integer,Libro> aux = new HashMap<>();
+        if (!this.fichero.exists() || this.fichero.length() == 0) {
+            return aux;
+        }
         try (FileReader fr = new FileReader(this.fichero);
              BufferedReader br = new BufferedReader(fr)) {
             String linea;
             while ((linea = br.readLine()) != null) {
-                String[] s = linea.split(", "); 
+                String[] s = linea.split(";"); 
                 int isbn = Integer.parseInt(s[0]);
-                Libro libro = new Libro(isbn, s[1], s[2], s[3], s[4]);
-                aux.put(isbn, libro);
+                Libro libro = new Libro(isbn, s[1].trim(), s[2].trim(), s[3].trim(), s[4].trim());
+                if (aux.containsKey(isbn)) {
+                    this.vista.errorLibroRepetido(isbn);
+                } else {
+                    aux.put(isbn, libro);
+                }
             }
         } catch (FileNotFoundException e) {
-            System.err.println("Error: El fichero de texto no existe.");
-            System.err.println(e.getMessage());
+            this.vista.errorFicheroInexistente(this.nombreFichero);
         } catch (IOException | NumberFormatException e) {
-            System.err.println("Error: No se han podido leer/parsear los libros del fichero de texto.");
-            System.err.println(e.getMessage());
+            this.vista.errorLecturaFichero(this.nombreFichero);
         }
         return aux;
     }
@@ -62,12 +70,12 @@ public final class FicheroTxt implements Funcionalidades {
                 if (!comienza) {
                     bw.newLine();
                 }
-                bw.write(libro.toString());
+                bw.write(libro.getIsbn() + ";" + libro.getTitulo() + ";" + libro.getAutor() + ";" + libro.getEditorial() + ";" + libro.getGenero());
                 comienza = false;
             }
+            this.vista.guardadoFichero(this.nombreFichero);
         } catch (IOException e) {
-            System.err.println("Error: No se han podido escribir los libros en el fichero de texto.");
-            System.err.println(e.getMessage());
+            this.vista.errorGuardadoFichero(this.nombreFichero);
         }
     }
 
@@ -75,35 +83,42 @@ public final class FicheroTxt implements Funcionalidades {
     public void insertar(Libro libro) {
         int isbn = libro.getIsbn();
         if (this.biblioteca.containsKey(isbn)) {
-            System.out.println("Error: Ya existe un libro con el ISBN '" + isbn + "'.");
+            this.vista.errorLibroExistente(isbn);
             return;
         }
         this.biblioteca.put(isbn, libro);
-        System.out.println("El libro con el ISBN '" + isbn + "' se ha registrado correctamente.");
-        guardar(this.biblioteca);
+        this.vista.insercionLibro(isbn);
+        this.guardar(this.biblioteca);
     }
 
     @Override
     public void borrar(int isbn) {
         if (!this.biblioteca.containsKey(isbn)) {
-            System.out.println("Error: No existe ningún libro con el ISBN '" + isbn + "'.");
+            this.vista.errorLibroInexistente(isbn);
             return;
         }
         this.biblioteca.remove(isbn);
-        System.out.println("El libro con el ISBN '" + isbn + "' se ha borrado correctamente.");
-        guardar(this.biblioteca);
+        this.vista.borradoLibro(isbn);
+        this.guardar(this.biblioteca);
     }
 
     @Override
     public void modificar(int isbn, Libro libro) {
         if (!this.biblioteca.containsKey(isbn)) {
-            System.out.println("Error: No existe ningún libro con el ISBN '" + isbn + "'.");
+            this.vista.errorLibroExistente(isbn);
             return;
         }
         this.biblioteca.remove(isbn);
         this.biblioteca.put(libro.getIsbn(), libro);
-        System.out.println("El libro con el ISBN '" + isbn + "' se ha sustituido correctamente por el libro con el ISBN '" + isbn + "'.");
-        guardar(this.biblioteca);
+        this.vista.modificacionLibro(isbn, libro.getIsbn());
+        this.guardar(this.biblioteca);
+    }
+
+    @Override
+    public void restablecer() {
+        this.biblioteca.clear();
+        this.vista.restablecerLibros();
+        this.guardar(this.biblioteca);
     }
 
 }

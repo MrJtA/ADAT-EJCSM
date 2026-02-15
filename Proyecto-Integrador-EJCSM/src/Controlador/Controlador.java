@@ -1,11 +1,8 @@
 package Controlador;
 
-import java.sql.SQLException;
-import java.util.Map;
-import com.mongodb.MongoException;
-
 import Modelo.*;
 import Vista.Vista;
+import java.util.HashMap;
 
 public class Controlador {
 
@@ -19,15 +16,14 @@ public class Controlador {
 
     public void menu() {
         vista.introduccion();
-        boolean seguir = true;
-        while (seguir) {
+        while (true) {
             vista.menu();
             int opcion = vista.opcion();
+            if (opcion == 0) {
+                vista.despedida();
+                break;
+            }
             switch (opcion) {
-                case 0 -> {
-                    vista.despedida();
-                    seguir = false;
-                }
                 case 1 -> subMenuFichero();
                 case 2 -> subMenuBBDD();
                 default -> vista.opcionNoDisponible();
@@ -36,131 +32,84 @@ public class Controlador {
     }
 
     public void subMenuFichero() {
-        boolean seguir = true;
-        while (seguir) {
-            vista.subMenuFichero();
+        while (true) {
+            vista.menuFichero();
             int opcion = vista.opcion();
-            switch (opcion) {
-                case 0 -> seguir = false;
-                case 1 -> {
-                    String nombreFichero = vista.pedirFichero();
-                    if (nombreFichero == null) continue;
-                    funcionalidades = new FicheroTxt(nombreFichero);
-                    subMenu();
+            if (opcion == 0) break;
+            try {
+                switch (opcion) {
+                    case 1 -> funcionalidades = new FicheroTxt(vista.pedirFichero());
+                    case 2 -> funcionalidades = new FicheroBin(vista.pedirFichero());
+                    case 3 -> funcionalidades = new FicheroXML(vista.pedirFichero());
+                    default -> vista.opcionNoDisponible();
                 }
-                case 2 -> {
-                    String nombreFichero = vista.pedirFichero();
-                    if (nombreFichero == null) continue;
-                    funcionalidades = new FicheroBin(nombreFichero);
-                    subMenu();
-                }
-                case 3 -> {
-                    String nombreFichero = vista.pedirFichero();
-                    if (nombreFichero == null) continue;
-                    funcionalidades = new FicheroXML(nombreFichero);
-                    subMenu();
-                }
-                default -> vista.opcionNoDisponible();
-            }
+                subMenu();
+            } catch (Exception e) {}
         }
     }
 
     public void subMenuBBDD() {
-        boolean seguir = true;
-        while (seguir) {
-            vista.subMenuBBDD();
+        while (true) {
+            vista.menuBBDD();
             int opcion = vista.opcion();
-            switch (opcion) {
-                case 0 -> seguir = false;
-                case 1 -> {
-                    String nombreBBDD = vista.pedirBBDD();
-                    try {
-                        funcionalidades = new BBDDMySQL(nombreBBDD);
-                    } catch (SQLException e) {
-                        vista.falloBBDD(nombreBBDD);
-                    }
-                    subMenu();
+            if (opcion == 0) break;
+            try {
+                switch (opcion) {
+                    case 1 -> funcionalidades = new BBDDMySQL(vista.pedirBBDD());
+                    case 2 -> funcionalidades = new BBDDMySQLHibernate();
+                    case 3 -> funcionalidades = new BBDDObjetos();
+                    case 4 -> funcionalidades = new BBDDMongo(vista.pedirBBDD());
+                    case 5 -> funcionalidades = new BBDDPHP();
+                    default -> vista.opcionNoDisponible();
                 }
-                case 2 -> {
-                    funcionalidades = new BBDDMySQLHibernate();
-                    subMenu();
-                }
-                case 3 -> {
-                    funcionalidades = new BBDDObjetos();
-                    subMenu();
-                }
-                case 4 -> {
-                    funcionalidades = new BBDDMongo(vista.pedirBBDD());
-                    subMenu();
-                }
-                default -> vista.opcionNoDisponible();
-            }
+                subMenu();
+            } catch (Exception e) {}
         }
     }
     
     public void subMenu() {
-        boolean seguir = true;
-        while (seguir) {
+        while (true) {
             vista.subMenu();
             int opcion = vista.opcion();
-            Map<Integer, Libro> biblioteca = funcionalidades.leer();
-            switch (opcion) {
-                case 0 -> seguir = false;
-                case 1 -> vista.buscar(biblioteca, vista.pedirLibro(biblioteca));
-                case 2 -> vista.mostrar(funcionalidades.leer());
-                case 3 -> funcionalidades.insertar(vista.crearLibro());
-                case 4 -> funcionalidades.borrar(vista.pedirLibro(biblioteca));
-                case 5 -> funcionalidades.modificar(vista.pedirLibro(biblioteca), vista.crearLibro());
-                case 6 -> {
-                    String nombreFichero = vista.pedirFichero();
-                    if (nombreFichero == null) continue;
-                    FicheroTxt fichero = new FicheroTxt(nombreFichero);
-                    fichero.guardar(funcionalidades.leer());
+            if (opcion == 0) break;
+            try {      
+                HashMap<Integer, Libro> biblioteca = funcionalidades.leer();
+                switch (opcion) {
+                    case 1 -> vista.buscar(biblioteca, vista.pedirLibro(biblioteca));
+                    case 2 -> vista.mostrar(biblioteca);
+                    case 3 -> funcionalidades.insertar(vista.crearLibro());
+                    case 4 -> funcionalidades.borrar(vista.pedirLibro(biblioteca));
+                    case 5 -> funcionalidades.modificar(vista.pedirLibro(biblioteca), vista.crearLibro());
+                    case 6 -> funcionalidades.restablecer();
+                    case 7 -> subMenuTraspasarDatos();
+                    default -> vista.opcionNoDisponible();
                 }
-                case 7 -> {
-                    String nombreFichero = vista.pedirFichero();
-                    if (nombreFichero == null) continue;
-                    FicheroBin fichero = new FicheroBin(nombreFichero);
-                    fichero.guardar(funcionalidades.leer());
+            } catch (Exception e) {}
+        }
+    }
+
+    public void subMenuTraspasarDatos() {
+        HashMap<Integer, Libro> biblioteca = funcionalidades.leer();
+        if (biblioteca.isEmpty()) {
+            vista.errorVacío();
+            return;
+        }
+        while (true) {
+            vista.subMenuTraspasarDatos();
+            int opcion = vista.opcion();
+            if (opcion == 0) break;
+            try {       
+                switch (opcion) {
+                    case 1 -> new FicheroTxt(vista.pedirFichero()).guardar(biblioteca);
+                    case 2 -> new FicheroBin(vista.pedirFichero()).guardar(biblioteca);
+                    case 3 -> new FicheroXML(vista.pedirFichero()).guardar(biblioteca);
+                    case 4 -> new BBDDMySQL(vista.pedirBBDD()).guardar(biblioteca);
+                    case 5 -> new BBDDMySQLHibernate().guardar(biblioteca);
+                    case 6 -> new BBDDObjetos().guardar(biblioteca);
+                    case 7 -> new BBDDMongo(vista.pedirBBDD()).guardar(biblioteca);
+                    default -> vista.opcionNoDisponible();
                 }
-                case 8 -> {
-                    String nombreFichero = vista.pedirFichero();
-                    if (nombreFichero == null) continue;
-                    FicheroXML fichero = new FicheroXML(nombreFichero);
-                    fichero.guardar(funcionalidades.leer());
-                }
-                case 9 -> {
-                    String nombreBBDD = vista.pedirBBDD();
-                    try {
-                        BBDDMySQL bbdd = new BBDDMySQL(nombreBBDD);
-                        bbdd.guardar(funcionalidades.leer());
-                    } catch (SQLException e) {
-                        vista.falloBBDD(nombreBBDD);
-                    }
-                }
-                case 10 -> {
-                    try {
-                        BBDDMySQLHibernate bbdd = new BBDDMySQLHibernate();
-                        bbdd.guardar(funcionalidades.leer());
-                    } catch (Exception e) {
-                        vista.falloBBDD("biblioteca");
-                    }
-                }
-                case 11 -> {
-                    BBDDObjetos bbdd = new BBDDObjetos();
-                    bbdd.guardar(funcionalidades.leer());
-                }
-                case 12 -> {
-                    String nombreBBDD = vista.pedirBBDD();
-                    try {
-                        BBDDMongo bbdd = new BBDDMongo(nombreBBDD);
-                        bbdd.guardar(funcionalidades.leer());
-                    } catch (MongoException e) {
-                        vista.falloBBDD(nombreBBDD);
-                    }
-                }
-                default -> vista.opcionNoDisponible();
-            }
+            } catch (Exception e) {}
         }
     }
 

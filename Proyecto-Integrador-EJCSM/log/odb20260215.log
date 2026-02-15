@@ -1,0 +1,47 @@
+------------------------------------------------------------------------------------------------------------------------
+
+[2026-02-15 01:24:47 #1 store] 
+Database 'C:\Users\EJCSM\Documents\ADAT-EJCSM\Proyecto-Integrador-EJCSM\db\Libro.odb' is opened by 15112@Joaquin
+
+[2026-02-15 01:24:47 #2 store] 
+Configuration path: ?
+
+[2026-02-15 01:24:47 #3 type] 
+Type Modelo.Libro is not enhanced.
+
+------------------------------------------------------------------------------------------------------------------------
+
+[2026-02-15 01:25:51 #1 store] 
+Database 'C:\Users\EJCSM\Documents\ADAT-EJCSM\Proyecto-Integrador-EJCSM\db\Libro.odb' is opened by 15536@Joaquin
+
+[2026-02-15 01:25:51 #2 store] 
+Configuration path: ?
+
+[2026-02-15 01:25:51 #3 type] 
+Type Modelo.Libro is not enhanced.
+
+------------------------------------------------------------------------------------------------------------------------
+
+[2026-02-15 16:05:15 #1 store] 
+Database 'C:\Users\EJCSM\Documents\ADAT-EJCSM\Proyecto-Integrador-EJCSM\db\Libro.odb' has been recovered (tr. 6-11)
+
+[2026-02-15 16:05:15 #2 store] 
+Database 'C:\Users\EJCSM\Documents\ADAT-EJCSM\Proyecto-Integrador-EJCSM\db\Libro.odb' is opened by 8816@Joaquin
+
+[2026-02-15 16:05:15 #3 store] 
+Configuration path: ?
+
+[2026-02-15 16:05:15 #4 type] 
+Type Modelo.Libro is not enhanced.
+
+------------------------------------------------------------------------------------------------------------------------
+
+[2026-02-15 16:33:11 #1 store] 
+Database 'C:\Users\EJCSM\Documents\ADAT-EJCSM\Proyecto-Integrador-EJCSM\db\Libro.odb' is opened by 2684@Joaquin
+
+[2026-02-15 16:33:11 #2 store] 
+Configuration path: ?
+
+[2026-02-15 16:33:12 #3 type] 
+Type Modelo.Libro is not enhanced.
+

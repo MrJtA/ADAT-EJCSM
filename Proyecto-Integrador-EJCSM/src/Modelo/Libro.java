@@ -69,7 +69,7 @@ public class Libro implements Serializable {
 
     @Override
     public String toString() {
-        return this.isbn + ", " + this.titulo + ", " + this.autor + ", " + this.editorial + ", " + this.genero;
+        return "[ISBN: " + this.isbn + ", Título: " + this.titulo + ", Autor: " + this.autor + ", Editorial: " + this.editorial + ", Género: " + this.genero + "]";
     }
 
 }

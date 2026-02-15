@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<biblioteca>
+  <libro ISBN="11">
+    <titulo>Meditaciones</titulo>
+    <autor>Marco Aurelio</autor>
+    <editorial>Taurus</editorial>
+    <genero>Filosofía Estoica</genero>
+  </libro>
+  <libro ISBN="12">
+    <titulo>El mito de Sísifo</titulo>
+    <autor>Albert Camus</autor>
+    <editorial>Alianza</editorial>
+    <genero>Ensayo Filosófico</genero>
+  </libro>
+  <libro ISBN="13">
+    <titulo>Brevísima historia del tiempo</titulo>
+    <autor>Stephen Hawking</autor>
+    <editorial>Crítica</editorial>
+    <genero>Divulgación Científica</genero>
+  </libro>
+  <libro ISBN="14">
+    <titulo>Historia del Perú</titulo>
+    <autor>Frank Samaniego</autor>
+    <editorial>Sami</editorial>
+    <genero>Historia</genero>
+  </libro>
+  <libro ISBN="15">
+    <titulo>Ética</titulo>
+    <autor>Baruch Spinoza</autor>
+    <editorial>Alianza</editorial>
+    <genero>Filosofía</genero>
+  </libro>
+</biblioteca>

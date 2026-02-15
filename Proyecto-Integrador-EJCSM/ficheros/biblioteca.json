@@ -1,0 +1,37 @@
+[
+  {
+    "isbn": 31,
+    "titulo": "Los nueve libros de la historia",
+    "autor": "Heródoto",
+    "editorial": "Gredos",
+    "genero": "Historia Antigua"
+  },
+  {
+    "isbn": 32,
+    "titulo": "Metamorfosis",
+    "autor": "Franz Kafka",
+    "editorial": "Alianza",
+    "genero": "Novela"
+  },
+  {
+    "isbn": 33,
+    "titulo": "El Capital",
+    "autor": "Karl Marx",
+    "editorial": "Siglo XXI",
+    "genero": "Economía Política"
+  },
+  {
+    "isbn": 34,
+    "titulo": "Breve historia de España en el siglo XX",
+    "autor": "Julián Casanova y Carlos Gil Andrés",
+    "editorial": "Ariel",
+    "genero": "Ensayo histórico"
+  },
+  {
+    "isbn": 35,
+    "titulo": "Filosofía",
+    "autor": "EJCSM",
+    "editorial": "Edición de Autor",
+    "genero": "Filosofía"
+  }
+]

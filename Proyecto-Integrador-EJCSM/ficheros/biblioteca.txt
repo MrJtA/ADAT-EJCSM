@@ -1,0 +1,5 @@
+1;Conversación en la catedral;Mario Vargas Llosa;Alfaguara;Novela
+2;La ciudad y los perros;Mario Vargas Llosa;Seix Barral;Novela
+3;Niebla;Miguel de Unamuno;Cátedra;Novela
+4;Siega;Neal Shusterman;Nocturna Ediciones;Ciencia Ficción Juvenil
+5;Edipo Rey;Sófocles;Gredos;Tragedia Griega

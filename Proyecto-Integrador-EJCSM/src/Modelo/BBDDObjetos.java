@@ -1,15 +1,21 @@
 package Modelo;
 
+import Vista.Vista;
 import java.util.*;
 import javax.persistence.*;
 
-public class BBDDObjetos implements Funcionalidades{
+public final class BBDDObjetos implements Funcionalidades{
     
-    private EntityManagerFactory emf;
-    private HashMap<Integer,Libro> biblioteca;
+    private final EntityManagerFactory emf;
+    private final String nombreBBDD;
+    private final HashMap<Integer,Libro> biblioteca;
+    private final Vista vista;
 
     public BBDDObjetos() {
-        this.emf = Persistence.createEntityManagerFactory("db/Libro.odb");
+        this.nombreBBDD = "Libro.odb";
+        this.emf = Persistence.createEntityManagerFactory("db/" + this.nombreBBDD);
+        this.vista = new Vista();
+        this.vista.conexionBBDD(this.nombreBBDD);
         this.biblioteca = leer();
     }
 
@@ -23,11 +29,14 @@ public class BBDDObjetos implements Funcionalidades{
 		    List<Libro> datos = query.getResultList();	
             for (Libro libro : datos) {
                 int isbn = libro.getIsbn();
-                aux.put(isbn, libro);
+                if (aux.containsKey(isbn)) {
+					this.vista.errorLibroRepetido(isbn);
+				} else {
+					aux.put(isbn, libro);
+				}
 		    }
         } catch (Exception e) {
-            System.err.println("Error: No se han podido leer los datos la base de datos.");
-            System.err.println(e.getMessage());
+            this.vista.errorLecturaBBBDD(this.nombreBBDD);
         } finally {
             if (em != null) {
                 em.close();
@@ -42,15 +51,17 @@ public class BBDDObjetos implements Funcionalidades{
         try {
             em = emf.createEntityManager();
             em.getTransaction().begin();
+            em.createQuery("DELETE FROM Libro").executeUpdate();
             for (Libro libro : datos.values()) {
-                em.merge(libro);
+                em.persist(libro);
             }
             em.getTransaction().commit();
+            this.vista.guardadoBBDD(this.nombreBBDD);
         } catch (Exception e) {
             if (em != null && em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            System.err.println("Error: No se ha podido establecer la conexión con la base de datos.");
+            this.vista.errorGuardadoBBDD(this.nombreBBDD);
         } finally {
             if (em != null) {
                 em.close();
@@ -62,7 +73,7 @@ public class BBDDObjetos implements Funcionalidades{
     public void insertar(Libro libro) {
         int isbn = libro.getIsbn();
 		if (this.biblioteca.containsKey(isbn)) {
-			System.out.println("Error: Ya existe un libro con el mismo isbn: " + isbn);
+			this.vista.errorLibroExistente(isbn);
 			return;
 		}
         EntityManager em = null;
@@ -72,9 +83,12 @@ public class BBDDObjetos implements Funcionalidades{
             em.persist(libro);
             em.getTransaction().commit();
             this.biblioteca.put(isbn, libro);
+            this.vista.insercionLibro(isbn);
         } catch (Exception e) {
-            System.err.println("Error: No se ha podido insertar el libro con el ISBN '" + isbn + "' en la base de datos.");
-            System.err.println(e.getMessage());
+            if (em != null && em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            this.vista.errorInsercionLibro(isbn);
         } finally {
             if (em != null) {
                 em.close();
@@ -85,7 +99,7 @@ public class BBDDObjetos implements Funcionalidades{
     @Override
     public void borrar(int isbn) {
         if (!this.biblioteca.containsKey(isbn)) {
-            System.out.println("Error: No existe ningún libro con el ISBN '" + isbn + "'.");
+            this.vista.errorLibroInexistente(isbn);
             return;
         }
         EntityManager em = null;
@@ -96,11 +110,14 @@ public class BBDDObjetos implements Funcionalidades{
             if (libro != null) {
                 em.remove(libro);
                 this.biblioteca.remove(isbn);
+                this.vista.borradoLibro(isbn);
             }
             em.getTransaction().commit();
         } catch (Exception e) {
-            System.err.println("Error: No se ha podido borrar el con el ISBN '" + isbn + "' en la base de datos.");
-            System.err.println(e.getMessage());
+            if (em != null && em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            this.vista.errorBorradoLibro(isbn);
         } finally {
             if (em != null) {
                 em.close();
@@ -109,9 +126,9 @@ public class BBDDObjetos implements Funcionalidades{
     }
 
     @Override
-    public void modificar(int isbn, Libro libro){
+    public void modificar(int isbn, Libro libro) {
         if (!this.biblioteca.containsKey(isbn)) {
-            System.out.println("Error: No existe ningún libro con el ISBN '" + isbn + "'.");
+            this.vista.errorLibroInexistente(isbn);
             return;
         }
         EntityManager em = null;
@@ -130,10 +147,34 @@ public class BBDDObjetos implements Funcionalidades{
             em.getTransaction().commit();
             this.biblioteca.remove(isbn);
             this.biblioteca.put(libro.getIsbn(), libro);
-			System.out.println("El libro con el ISBN '" + isbn + "' se ha sustituido correctamente por el libro con el ISBN '" + libro.getIsbn() + "'.");
+			this.vista.modificacionLibro(isbn, libro.getIsbn());
         } catch (Exception e) {
-            System.err.println("Error: No se ha podido modificar el libro con el ISBN '" + isbn + "' en la base de datos.");
-            System.err.println(e.getMessage());
+            if (em != null && em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            this.vista.errorModificacionLibro(isbn);
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+    }
+
+    @Override
+    public void restablecer() {
+        EntityManager em = null;
+        try {
+            em = emf.createEntityManager();
+            em.getTransaction().begin();
+            em.createQuery("DELETE FROM Libro").executeUpdate();
+            em.getTransaction().commit();
+            this.biblioteca.clear();
+            this.vista.restablecerLibros();
+        } catch (Exception e) {
+            if (em != null && em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            this.vista.errorRestablecerLibros();
         } finally {
             if (em != null) {
                 em.close();
@@ -150,14 +191,12 @@ public class BBDDObjetos implements Funcionalidades{
             em = emf.createEntityManager();
             Libro libro = em.find(Libro.class, isbn);
             if (libro == null) {
-                System.out.println("Error: No existe ningún libro con el ISBN '" + isbn + "'.");
+                this.vista.errorLibroExistente(isbn);
             } else {
-                System.out.println("Libro encontrado con ISBN '" + isbn + "':");
-                System.out.println(libro);
+                this.vista.buscar(this.biblioteca, isbn);
             }
         } catch (Exception e) {
-            System.err.println("Error: No se ha podido buscar el libro con el ISBN '" + isbn + "' en la base de datos.");
-            System.err.println(e.getMessage());
+            this.vista.errorBusquedaLibro(isbn);
         } finally {
             if (em != null) {
                 em.close();
@@ -173,15 +212,16 @@ public class BBDDObjetos implements Funcionalidades{
             TypedQuery<Libro> query = em.createQuery("SELECT l FROM Libro l", Libro.class);
             List<Libro> libros = query.getResultList();
             if (libros.isEmpty()) {
-                System.out.println("No hay libros en la base de datos.");
+                this.vista.errorVacío();
             } else {
-                for (Libro l : libros) {
-                    System.out.println(l);
+                HashMap<Integer, Libro> aux = new HashMap<>();
+                for (Libro libro : libros) {
+                    aux.put(libro.getIsbn(), libro);
                 }
+                this.vista.mostrar(aux);
             }
         } catch (Exception e) {
-            System.err.println("Error: No se han podido mostrar los libros en la base de datos.");
-            System.err.println(e.getMessage());
+            this.vista.errorMuestraLibros();
         } finally {
             if (em != null) {
                 em.close();

@@ -9,5 +9,6 @@ public interface Funcionalidades {
     public void insertar(Libro libro);
     public void modificar(int isbn, Libro libro);
     public void borrar(int isbn);
+    public void restablecer();
 
 }
