@@ -1,0 +1,58 @@
+[
+    {
+        "id": "1",
+        "nombre": "Extremoduro",
+        "albumes": [
+            {
+                "idAlbum": "2",
+                "tituloAlbum": "Historias prohibidas"
+            },
+            {
+                "idAlbum": "3",
+                "tituloAlbum": "Deltoya"
+            },
+            {
+                "idAlbum": "4",
+                "tituloAlbum": "Pedra"
+            }
+        ]
+    },
+    {
+        "id": "2",
+        "nombre": "Mecano",
+        "albumes": [
+            {
+                "idAlbum": "1",
+                "tituloAlbum": "Grandes exitos"
+            },
+            {
+                "idAlbum": "5",
+                "tituloAlbum": "Ailala"
+            }
+        ]
+    },
+    {
+        "id": "3",
+        "nombre": "Dire Straits",
+        "albumes": [
+            {
+                "idAlbum": "17",
+                "tituloAlbum": "Alchemy"
+            },
+            {
+                "idAlbum": "18",
+                "tituloAlbum": "Making movies"
+            }
+        ]
+    },
+    {
+        "id": "4",
+        "nombre": "Directos al mar",
+        "albumes": [
+            {
+                "idAlbum": "23",
+                "tituloAlbum": "Uno de prueba"
+            }
+        ]
+    }
+]
