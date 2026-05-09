@@ -1,11 +1,12 @@
 package accesodatos_alumnos;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.List;
+import java.io.*;
+import java.util.*;
+import java.text.Format;
 
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
@@ -33,36 +34,35 @@ public class IntermediarioXML_PD {
 	 */
 
 	public void leerDatos(String rutaFicheroDirectores) {
-		
-		File inputFile = new File(rutaFicheroDirectores);
+		File ficheroDirectores = new File(rutaFicheroDirectores);
 		try {
 			SAXBuilder saxBuilder = new SAXBuilder();
-			Document document = saxBuilder.build(inputFile);
-			Element raiz = document.getRootElement();
-			List<Element> list = raiz.getChildren();
-			for (int i = 0; i < list.size(); i++) {
-				Element elemento = list.get(i);
-				int id = Integer.parseInt(elemento.getChild("id").getText()); 
-				String name = elemento.getChild("nombre").getText();
+			Document document = saxBuilder.build(ficheroDirectores);
+			Element raiz = document.getRootElement();		
+			List<Element> directores = raiz.getChildren();		
+			for (Element director : directores) {
+				String id = director.getChildText("id");
+				String nombre = director.getChildText("nombre");
 				System.out.println("--------------------------------------------------------------");
-				System.out.println("ID: " + id + " - " + "Nombre: " + name);
-				Element peliculas = elemento.getChild("peliculas");
-				if(peliculas!=null) {
-					List<Element> listaPelis = peliculas.getChildren();
-					System.out.print("\t\tPeliculas: ");
+				System.out.println("ID: " + id + " - Nombre: " + nombre);
+				Element peliculasContainer = director.getChild("peliculas");
+				if (peliculasContainer != null) {
+					List<Element> listaPelis = peliculasContainer.getChildren();
+					System.out.print("\t\tPeliculas: ");			
 					for (int j = 0; j < listaPelis.size(); j++) {
-						Element peli = listaPelis.get(j);
-						System.out.print(peli.getChild("nombre").getText() + ", ");
+						String nombrePeli = listaPelis.get(j).getChildText("nombre");
+						System.out.print(nombrePeli);					
+						if (j < listaPelis.size() - 1) {
+							System.out.print(", ");
+						}
 					}
-					System.out.print("\n");
+					System.out.println();
 				}
-				System.out.println("--------------------------------------------------------------");			
+				System.out.println("--------------------------------------------------------------");
 			}
 		} catch (Exception e) {
-			System.err.println("Got an exception! " + e.getMessage());
-			e.printStackTrace();
+			System.err.println("Error procesando XML: " + e.getMessage());
 		}
-
 	}
 
 	/*
@@ -70,44 +70,36 @@ public class IntermediarioXML_PD {
 	 */
 
 	public void insertarDirector(String rutaFicheroDirectores, String nombre) {
-
-		File inputFile = new File(rutaFicheroDirectores);
-		System.out.println("INSERTANDO DIRECTOR");
 		try {
+			File ficheroDirectores = new File(rutaFicheroDirectores);
 			SAXBuilder saxBuilder = new SAXBuilder();
-			Document document = saxBuilder.build(inputFile);
-			Element raiz = document.getRootElement();
-			List<Element> list = raiz.getChildren();
-			int idMaximo = 0;
-			for (int i = 0; i < list.size(); i++) {
-				Element elemento = list.get(i);
-				
-				int id = Integer.parseInt(elemento.getChild("id").getText()); 
-				if(id>idMaximo) {
-					idMaximo = id;
+			Document documento = saxBuilder.build(ficheroDirectores);
+			Element raiz = documento.getRootElement();
+			List<Element> listaDirectores = raiz.getChildren("director");
+			ArrayList<Integer> ids = new ArrayList<>();
+			for (Element director : listaDirectores) {
+				int id = Integer.parseInt(director.getChildText("id"));
+				ids.add(id);
+			}
+			int id;
+			while (true) {
+				id = (int) (Math.random()*Integer.MAX_VALUE);
+				if (!ids.contains(id)) {
+					break;
 				}
 			}
-			idMaximo++;
-			Element elementoDirector = new Element("director");
-			raiz.addContent(elementoDirector);
-			Element elementoId = new Element("id");
-			elementoId.setText(String.valueOf(idMaximo));
-			Element elementoNombre = new Element("nombre");
-			elementoNombre.setText(nombre);
-			elementoDirector.addContent(elementoId);	
-			elementoDirector.addContent(elementoNombre);
-			Format f = Format.getPrettyFormat ();
-			f.setEncoding("UTF-8");
-			f.setOmitDeclaration(false);
-			XMLOutputter xmlOut = new XMLOutputter(f);
-			xmlOut.output(document, new FileOutputStream(inputFile));
-			System.out.println("Añadido un nuevo elemento");
-		} catch (Exception e) {
-			System.err.println("Got an exception! " + e.getMessage());
-			e.printStackTrace();
-		}		
-		
-
+			Element director = new Element("director");
+			director.addContent(new Element("id").setText(String.valueOf(id)));
+			director.addContent(new Element("nombre").setText(nombre));
+			raiz.addContent(director);
+			XMLOutputter xmlOutput = new XMLOutputter(Format.getPrettyFormat());
+			try (FileOutputStream fos = new FileOutputStream(ficheroDirectores)) {
+				xmlOutput.output(documento, fos);
+			}
+			System.out.println("Se ha insertado el director correctamente.");
+		} catch (JDOMException | IOException e) {
+			System.out.println("Error procesando XML: " + e.getMessage());
+		}
 	}
 
 }

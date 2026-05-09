@@ -1,10 +1,7 @@
 package accesodatos_alumnos;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.*;
+import java.util.*;
 
 
 public class IntermediarioFichero_PD {
@@ -25,66 +22,44 @@ public class IntermediarioFichero_PD {
 	 */
 
 	public void leerFichero(String rutaFicheroDirectores, String rutaFicheroPeliculas) {
-		
-		File archivoDirectores = null;
-		FileReader frDirectores = null;
-		BufferedReader brDirectores = null;
-
-		try {
-
-			/*
-			 * Apertura del fichero y creacion de BufferedReader
-			 */
-
-			archivoDirectores = new File(rutaFicheroDirectores);
-			frDirectores = new FileReader(archivoDirectores);
-			brDirectores = new BufferedReader(frDirectores);
-
-			String delimitador = ";";
-			int id;
-			String name;
-		    String texto = brDirectores.readLine();
-		    while(texto != null) {
-		    	String[] campos = texto.split(delimitador);
-		    	id = Integer.parseInt(campos[0]);
-		    	name = campos[1];
-				System.out.println("--------------------------------------------------------------");
-				System.out.println("ID: " + id + " - " + "Nombre: " + name);
-				System.out.print("\t\tPeliculas: ");
-				File archivoPeliculas = new File(rutaFicheroPeliculas);
-				FileReader frPeliculas = new FileReader(archivoPeliculas);
-				BufferedReader brPeliculas = new BufferedReader(frPeliculas);	
-			    texto = brPeliculas.readLine();
-			    while(texto != null) {
-			    	String[] camposPeliculas = texto.split(delimitador);
-			    	String titulo = camposPeliculas[1];
-			    	int idDirector = Integer.parseInt(camposPeliculas[2]);
-			    	if(idDirector == id) {
-			    		System.out.print(titulo + ", ");
-			    	}
-			    	texto = brPeliculas.readLine();
-			    }
-			    System.out.print("\n");
-				brPeliculas.close();
-				frPeliculas.close();
-				System.out.println("--------------------------------------------------------------");		    	
-		        texto = brDirectores.readLine();
-		    }
-			brDirectores.close();
-			frDirectores.close();
-		} catch (Exception e) {
-			System.err.println("Got an exception! " + e.getMessage());
-			e.printStackTrace();
-		} finally {
-			try {
-				if (null != frDirectores) {
-					frDirectores.close();
+		File ficheroDirectores = new File(rutaFicheroDirectores);
+		File ficheroPeliculas = new File(rutaFicheroPeliculas);
+		try (FileReader fr1 = new FileReader(ficheroDirectores);
+		BufferedReader br1 = new BufferedReader(fr1)) {
+			String lineaDirector;
+			System.out.println("--------------------------------------------------------------");
+			while ((lineaDirector = br1.readLine()) != null) {
+				String[] director = lineaDirector.split(";");
+				int id = Integer.parseInt(director[0]);
+				String nombre = director[1];
+				System.out.println("ID: " + id + " - Nombre: " + nombre);
+				ArrayList<String> peliculas = new ArrayList<>();
+				String lineaPelicula;
+				try (FileReader fr2 = new FileReader(ficheroPeliculas);
+					BufferedReader br2 = new BufferedReader(fr2)) {
+					while ((lineaPelicula = br2.readLine()) != null) {
+						String[] pelicula = lineaPelicula.split(";");
+						String nombrePelicula = pelicula[1];
+						int idDirectorPelicula = Integer.parseInt(pelicula[2]);
+						if (idDirectorPelicula == id) {
+							peliculas.add(nombrePelicula);
+						}
+					}
 				}
-			} catch (Exception e2) {
-				e2.printStackTrace();
+				if (!peliculas.isEmpty()) {
+					System.out.print("Peliculas: ");
+					for (int i = 0; i < peliculas.size(); i++) {
+						System.out.print(peliculas.get(i));
+						if (i < peliculas.size() - 1) {
+							System.out.print(", ");
+						}
+					}
+				}
 			}
-		}		
-
+			System.out.println("--------------------------------------------------------------");
+		} catch (IOException e) {
+			System.out.println("Error al leer los ficheros: " + e.getMessage());
+		}
 	}
 
 	/*
@@ -92,53 +67,32 @@ public class IntermediarioFichero_PD {
 	 */
 
 	public void insertarDirector(String rutaFicheroDirectores, String nombre) {
-		
-		File archivoDirectores = null;
-		FileReader frDirectores = null;
-		BufferedReader brDirectores = null;
-
-		try {
-
-			/*
-			 * Apertura del fichero y creacion de BufferedReader para averiguar id maximo. Parte "extra"
-			 */
-
-			archivoDirectores = new File(rutaFicheroDirectores);
-			frDirectores = new FileReader(archivoDirectores);
-			brDirectores = new BufferedReader(frDirectores);
-			String delimitador = ";";
-			int id;
-			int idMaximo = 0;
-		    String texto = brDirectores.readLine();
-		    while(texto != null) {
-		    	String[] campos = texto.split(delimitador);
-		    	id = Integer.parseInt(campos[0]);
-				if(id>idMaximo) {
-					idMaximo = id;
+		File ficheroDirectores = new File(rutaFicheroDirectores);
+		try (FileWriter fw = new FileWriter(ficheroDirectores, true);
+		BufferedWriter bw = new BufferedWriter(fw)) {
+			ArrayList<Integer> ids = new ArrayList<>();
+			String linea;
+			try (FileReader fr = new FileReader(ficheroDirectores);
+				BufferedReader br = new BufferedReader(fr)) {
+				while ((linea = br.readLine()) != null) {
+					String[] director = linea.split(";");
+					int id = Integer.parseInt(director[0]);
+					ids.add(id);
 				}
-		        texto = brDirectores.readLine();
-		    }
-			brDirectores.close();
-			frDirectores.close();
-			idMaximo++;
-			FileWriter output = new FileWriter(archivoDirectores,true);
-			PrintWriter pw = new PrintWriter(output);
-			pw.println(idMaximo+";"+nombre);
-			pw.close();
-		    
-		} catch (Exception e) {
-			System.err.println("Got an exception! " + e.getMessage());
-			e.printStackTrace();
-		} finally {
-			try {
-				if (null != frDirectores) {
-					frDirectores.close();
-				}
-			} catch (Exception e2) {
-				e2.printStackTrace();
 			}
-		}			
-		
-
+			int id;
+			while (true) {
+				id = (int) (Math.random()*Integer.MAX_VALUE);
+				if (!ids.contains(id)) {
+					break;
+				}
+			}
+			bw.write(id + ";" + nombre);
+			bw.newLine();
+			System.out.println("Se ha insertado el director correctamente.");
+		} catch (IOException e) {
+			System.out.println("Error al leer los ficheros: " + e.getMessage());
+		}
 	}
+
 }

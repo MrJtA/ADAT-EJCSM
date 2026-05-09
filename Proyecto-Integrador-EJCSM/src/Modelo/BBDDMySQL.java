@@ -33,7 +33,7 @@ public final class BBDDMySQL implements Funcionalidades {
     private void crearBBDD(String nombreBBDD) throws SQLException {
         try (Connection caux = DriverManager.getConnection(this.url, this.usuario, this.contraseña)) {
             boolean existeBBDD = false;
-            String queryVerificar = "SHOW DATABASES LIKE ?"; 
+            String queryVerificar = "SHOW DATABASES LIKE ?";
             try (PreparedStatement ps = caux.prepareStatement(queryVerificar)) {
                 ps.setString(1, nombreBBDD);
                 try (ResultSet rs = ps.executeQuery()) {

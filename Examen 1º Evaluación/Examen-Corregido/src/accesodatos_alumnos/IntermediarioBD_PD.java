@@ -1,10 +1,6 @@
 package accesodatos_alumnos;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class IntermediarioBD_PD {
 
@@ -24,15 +20,13 @@ public class IntermediarioBD_PD {
 		String url = "jdbc:mysql://" + hostname + ":" + port + "/" + database + "?useSSL=false";
 		String username = "root";
 		String password = "";
-
 		try {
 			Class.forName(driver);
 			// System.out.println(url);
 			conn = DriverManager.getConnection(url, username, password);
 		} catch (ClassNotFoundException | SQLException e) {
-			e.printStackTrace();
+			System.out.println("Error al acceder a la base de datos: " + e.getMessage());
 		}
-
 	}
 
 	/*
@@ -51,23 +45,19 @@ public class IntermediarioBD_PD {
 	 */
 
 	public void buscarUnDirector(String nombreDirector) {
-
-		try {
-			String query = "SELECT * FROM directores WHERE nombre = ?;";
-			PreparedStatement preparedStatement = conn.prepareStatement(query);
-			preparedStatement.setString(1, nombreDirector);
-			ResultSet rs = preparedStatement.executeQuery();
+		String query = "SELECT * FROM directores WHERE nombre LIKE ?;";
+		try (PreparedStatement ps = conn.prepareStatement(query)) {
+			ps.setString(1, "%" + nombreDirector + "%");
+			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
 				int id = rs.getInt("id");
 				String name = rs.getString("nombre");
 				System.out.println("--------------------------------------------------------------");
-				System.out.printf("\tID: %d - Nombre: %s\n", id, name);
-				System.out.println("--------------------------------------------------------------");
+				System.out.println("ID: " + id + " - Nombre: " + name);
 			}
-			preparedStatement.close();
-		} catch (Exception e) {
-			System.err.println("Got an exception! " + e.getMessage());
-			e.printStackTrace();
+			System.out.println("--------------------------------------------------------------");
+		} catch (SQLException e) {
+			System.out.println("Error al acceder a la base de datos: " + e.getMessage());
 		}
 	}
 
@@ -76,16 +66,13 @@ public class IntermediarioBD_PD {
 	 */
 
 	public void insertarUnDirector(String nombreDirector) {
-		try {
-			String query = "INSERT INTO directores (nombre) VALUES(?)";
-			PreparedStatement preparedStatement = conn.prepareStatement(query);
-			preparedStatement.setString(1, nombreDirector);
-			int filas = preparedStatement.executeUpdate();
-			System.out.println("Filas afectadas: " + filas);		
-			preparedStatement.close();
-		} catch (Exception e) {
-			System.err.println("Got an exception! " + e.getMessage());
-			e.printStackTrace();
+		String query = "INSERT INTO directores (nombre) VALUES(?)";
+		try (PreparedStatement ps = conn.prepareStatement(query)) {
+			ps.setString(1, nombreDirector);
+			ps.executeUpdate();
+			System.out.println("Se ha insertado el director correctamente.");
+		} catch (SQLException e) {
+			System.out.println("Error al acceder a la base de datos: " + e.getMessage());
 		}
 	}
 
@@ -94,20 +81,16 @@ public class IntermediarioBD_PD {
 	 */
 
 	public void modificarUnDirector(int idDirector, String nombreNuevo) {
-
-		try {
-			String query = "UPDATE directores SET nombre= ? WHERE id = ?";
-			PreparedStatement preparedStatement = conn.prepareStatement(query);
-			preparedStatement.setString(1, nombreNuevo);
-			preparedStatement.setInt(2, idDirector);
-			int filas = preparedStatement.executeUpdate();
+		String query = "UPDATE directores SET nombre = ? WHERE id = ?";
+		try (PreparedStatement ps = conn.prepareStatement(query)) {
+			ps.setString(1, nombreNuevo);
+			ps.setInt(2, idDirector);
+			int filas = ps.executeUpdate();
+			System.out.println("Se ha modificado el director correctamente.");
 			System.out.println("Filas afectadas: " + filas);
-			preparedStatement.close();
-		} catch (Exception e) {
-			System.err.println("Got an exception! " + e.getMessage());
-			e.printStackTrace();
+		} catch (SQLException e) {
+			System.out.println("Error al acceder a la base de datos: " + e.getMessage());
 		}
-
 	}
 
 	/*
@@ -115,19 +98,15 @@ public class IntermediarioBD_PD {
 	 */
 
 	public void borrarUnDirector(int idDirector) {
-
-		try {
-			String query = "DELETE FROM directores WHERE id = ?";
-			PreparedStatement preparedStatement = conn.prepareStatement(query);
-			preparedStatement.setInt(1, idDirector);
-			int filas = preparedStatement.executeUpdate();
-			System.out.println("Filas afectadas: " + filas);
-			preparedStatement.close();
-		} catch (Exception e) {
-			System.err.println("Got an exception! " + e.getMessage());
-			e.printStackTrace();
+		String query = "DELETE FROM directores WHERE id = ?";
+		try (PreparedStatement ps = conn.prepareStatement(query)) {
+			ps.setInt(1, idDirector);
+			int filas = ps.executeUpdate();
+			System.out.println("Se ha borrado el director correctamente.");
+			System.out.println("Filas afectadas: " + filas);         
+		} catch (SQLException e) {
+			System.out.println("Error al acceder a la base de datos: " + e.getMessage());
 		}
-
 	}
 
 	/*
@@ -135,55 +114,24 @@ public class IntermediarioBD_PD {
 	 * Se valorará si se muestra el nombre del director en lugar del ID
 	 * Varias opciones para hacerlo
 	 * Se opta por el JOIN que es el más fácil pero se podría hacer con subconsultas 
-	 * 		o incluso lanzando una nueva consulta: por cada película preguntamos por el nombre del director buscando por el id...
+	 * o incluso lanzando una nueva consulta: por cada película preguntamos por el nombre del director buscando por el id...
 	 */
 
 	public void consultaPeliculas() {
-		try {
-			String query = "SELECT peliculas.id AS idPelicula, peliculas.titulo AS titulo, directores.nombre AS nombre FROM peliculas JOIN directores ON peliculas.director=directores.id";
-			PreparedStatement preparedStatement = conn.prepareStatement(query);
-			ResultSet rs = preparedStatement.executeQuery();
-			int id;
-			String name;
-			String title;
+		String query = "SELECT peliculas.id AS idPelicula, peliculas.titulo AS titulo, directores.nombre AS nombre FROM peliculas JOIN directores ON peliculas.director = directores.id";
+		try (PreparedStatement ps = conn.prepareStatement(query)) {
+			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
-				id = rs.getInt("idPelicula");
-				title = rs.getString("titulo");
-				name = rs.getString("nombre");
-				// print the results.
+				int id = rs.getInt("idPelicula");
+				String titulo = rs.getString("titulo");
+				String nombreDirector = rs.getString("nombre");
 				System.out.println("--------------------------------------------------------------");
-				System.out.printf("\tID: %d - Titulo: %s - Director: %s\n", id, title, name);
-				System.out.println("--------------------------------------------------------------");
+				System.out.println("ID: " + id + " - Titulo: " + titulo + " - Director: " + nombreDirector);
 			}
-			preparedStatement.close();
-		} catch (Exception e) {
-			System.err.println("Got an exception! " + e.getMessage());
-			e.printStackTrace();
+			System.out.println("--------------------------------------------------------------");
+		} catch (SQLException e) {
+			System.out.println("Error al acceder a la base de datos: " + e.getMessage());
 		}
-
-	}
-	
-	/*
-	 * Extra. No se pedía. Simplemente es para facilitar las pruebas y comprobar una cosa que se ha investigado 
-	 */
-	private void ultimoIdGenerado(int filasAfectadas, PreparedStatement pstmt) {
-	    long idGenerado;
-	    try {
-			if (filasAfectadas > 0) {
-		        // Recuperar las claves generadas (en este caso, el ID autoincremental)
-		        try (ResultSet rs = pstmt.getGeneratedKeys()) {
-		            if (rs.next()) {
-		                // Obtener el valor del primer (y único) ID generado
-		                idGenerado = rs.getLong(1);
-		                System.out.println("ID de la fila insertada: " + idGenerado);		                
-		            }
-		        }
-		    }
-	    }catch (Exception e) { // Muestro el error completo para ver que pasa y poder solucionarlo
-			System.err.println("Got an exception! " + e.getMessage());
-			e.printStackTrace();
-		}
-	    
 	}	
 
 }
