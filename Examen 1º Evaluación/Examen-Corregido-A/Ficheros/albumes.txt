@@ -1,0 +1,4 @@
+1,Lux,3
+2,Alchemy,2
+3,Aidalai,1
+4,Descanso Dominical,1

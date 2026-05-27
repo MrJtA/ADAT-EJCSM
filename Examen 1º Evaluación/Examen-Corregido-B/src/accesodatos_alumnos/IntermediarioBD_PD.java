@@ -49,13 +49,20 @@ public class IntermediarioBD_PD {
 		try (PreparedStatement ps = conn.prepareStatement(query)) {
 			ps.setString(1, "%" + nombreDirector + "%");
 			ResultSet rs = ps.executeQuery();
+			boolean hayResultados = false;
 			while (rs.next()) {
+				hayResultados = true;
 				int id = rs.getInt("id");
-				String name = rs.getString("nombre");
+				String nombre = rs.getString("nombre");
 				System.out.println("--------------------------------------------------------------");
-				System.out.println("ID: " + id + " - Nombre: " + name);
+				System.out.println("ID: " + id + " - Nombre: " + nombre);
 			}
-			System.out.println("--------------------------------------------------------------");
+			if (hayResultados) {
+				System.out.println("--------------------------------------------------------------");
+			}
+			else {
+				System.out.println("No se han encontrado resultados.");
+			}
 		} catch (SQLException e) {
 			System.out.println("Error al acceder a la base de datos: " + e.getMessage());
 		}
@@ -118,17 +125,23 @@ public class IntermediarioBD_PD {
 	 */
 
 	public void consultaPeliculas() {
-		String query = "SELECT peliculas.id AS idPelicula, peliculas.titulo AS titulo, directores.nombre AS nombre FROM peliculas JOIN directores ON peliculas.director = directores.id";
+		String query = "SELECT albumes.ID AS idAlbum, albumes.TITULO AS nombreAlbum, grupos.nombre AS nombreGrupo FROM albumes JOIN grupos ON albumes.AUTOR = grupos.id";
 		try (PreparedStatement ps = conn.prepareStatement(query)) {
 			ResultSet rs = ps.executeQuery();
+			boolean hayResultados = false;
 			while (rs.next()) {
+				hayResultados = true;
 				int id = rs.getInt("idPelicula");
 				String titulo = rs.getString("titulo");
 				String nombreDirector = rs.getString("nombre");
 				System.out.println("--------------------------------------------------------------");
 				System.out.println("ID: " + id + " - Titulo: " + titulo + " - Director: " + nombreDirector);
 			}
-			System.out.println("--------------------------------------------------------------");
+			if (hayResultados) {
+				System.out.println("--------------------------------------------------------------");
+			} else {
+				System.out.println("No se han encontrado resultados.");
+			}
 		} catch (SQLException e) {
 			System.out.println("Error al acceder a la base de datos: " + e.getMessage());
 		}

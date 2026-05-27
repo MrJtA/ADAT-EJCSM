@@ -1,0 +1,34 @@
+<grupos>
+	<Grupo>
+		<id>1</id>
+		<nombre>Mecano</nombre>
+		<albumes>
+			<album>
+				<nombre>Aidalai</nombre>
+				<vendidos>100000</vendidos>
+			</album>
+			<album>
+				<nombre>Descanso dominical</nombre>
+				<vendidos>50000</vendidos>
+			</album>
+		</albumes>
+	</Grupo>
+	<Grupo>
+		<id>2</id>
+		<nombre>Dire Straits</nombre>
+		<albumes>
+			<album>
+				<nombre>Alchemy</nombre>
+				<vendidos>1000000</vendidos>
+			</album>
+		</albumes>
+	</Grupo>
+	<Grupo>
+		<id>3</id>
+		<nombre>Rosalia</nombre>
+		<album>
+			<nombre>Lux</nombre>
+			<vendidos>5000000</vendidos>
+		</album>
+	</Grupo>
+</grupos>

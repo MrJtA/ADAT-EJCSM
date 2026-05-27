@@ -27,8 +27,8 @@ public class IntermediarioFichero_PD {
 		try (FileReader fr1 = new FileReader(ficheroDirectores);
 		BufferedReader br1 = new BufferedReader(fr1)) {
 			String lineaDirector;
-			System.out.println("--------------------------------------------------------------");
 			while ((lineaDirector = br1.readLine()) != null) {
+				System.out.println("--------------------------------------------------------------");
 				String[] director = lineaDirector.split(";");
 				int id = Integer.parseInt(director[0]);
 				String nombre = director[1];
@@ -54,9 +54,10 @@ public class IntermediarioFichero_PD {
 							System.out.print(", ");
 						}
 					}
+					System.out.println();
 				}
+				System.out.println("--------------------------------------------------------------");
 			}
-			System.out.println("--------------------------------------------------------------");
 		} catch (IOException e) {
 			System.out.println("Error al leer los ficheros: " + e.getMessage());
 		}
@@ -68,31 +69,35 @@ public class IntermediarioFichero_PD {
 
 	public void insertarDirector(String rutaFicheroDirectores, String nombre) {
 		File ficheroDirectores = new File(rutaFicheroDirectores);
-		try (FileWriter fw = new FileWriter(ficheroDirectores, true);
-		BufferedWriter bw = new BufferedWriter(fw)) {
-			ArrayList<Integer> ids = new ArrayList<>();
-			String linea;
-			try (FileReader fr = new FileReader(ficheroDirectores);
+        ArrayList<Integer> ids = new ArrayList<>();
+		try (FileReader fr = new FileReader(ficheroDirectores);
 				BufferedReader br = new BufferedReader(fr)) {
-				while ((linea = br.readLine()) != null) {
+			String linea;
+			while ((linea = br.readLine()) != null) {
+				if (!linea.trim().isEmpty()) {
 					String[] director = linea.split(";");
-					int id = Integer.parseInt(director[0]);
+					int id = Integer.parseInt(director[0].trim());
 					ids.add(id);
 				}
 			}
-			int id;
-			while (true) {
-				id = (int) (Math.random()*Integer.MAX_VALUE);
-				if (!ids.contains(id)) {
-					break;
-				}
-			}
-			bw.write(id + ";" + nombre);
-			bw.newLine();
-			System.out.println("Se ha insertado el director correctamente.");
-		} catch (IOException e) {
-			System.out.println("Error al leer los ficheros: " + e.getMessage());
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
 		}
+        int id;
+        while (true) {
+            id = (int) (Math.random() * Integer.MAX_VALUE);
+            if (!ids.contains(id)) {
+                break;
+            }
+        }
+        try (FileWriter fw = new FileWriter(ficheroDirectores, true);
+             BufferedWriter bw = new BufferedWriter(fw)) {        
+            bw.write(id + ";" + nombre);
+            bw.newLine();
+            System.out.println("El director se ha insertado correctamente.");
+        } catch (Exception e) {
+            System.out.println("Error al insertar el director: " + e.getMessage());
+        }
 	}
 
 }
